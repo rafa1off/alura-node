@@ -1,5 +1,7 @@
 import mongoose from "mongoose"
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-let db = mongoose.connect('mongodb+srv://admin:admin@teste1.bkcu0ox.mongodb.net/livraria')
+let db = mongoose.connect(process.env.CONNECTION_STRING)
 
 export default db
