@@ -1,10 +1,13 @@
 import express from 'express'
-import LivroController from '../controllers/livrosController.js'
+import LivrosController from '../controllers/livrosController.js'
 
 const router = express.Router()
 
 router
-    .get('/livros', LivroController.listarLivros)
-    .post('/livros', LivroController.cadastrarLivro)
+    .get('/livros', LivrosController.listarLivros)
+    .post('/livros', LivrosController.cadastrarLivro)
+    .put('/livros/:id', LivrosController.atualizarLivro)
+    .get('/livros/:id', LivrosController.listarLivro)
+    .delete('/livros/:id', LivrosController.deletarLivro)
 
 export default router

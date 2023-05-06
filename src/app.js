@@ -17,20 +17,4 @@ function buscaLivro(id) {
 
 routes(app)
 
-app.route('/livros/:id')
-    .get((req, res) => {
-        let id = new ObjectId(req.params.id)
-        livros.find({ '_id': id })
-            .then(livro => res.json(livro))
-            .catch(err => res.send(err))
-    })
-    .put((req, res) => {
-        let id = new ObjectId(req.params.id)
-        livros.find({ '_id': id })
-    })
-    .delete((req, res) => {
-        let id = new ObjectId(req.params.id)
-        livros.deleteOne({ '_id': id })
-    })
-
 export default app
