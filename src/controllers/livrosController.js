@@ -14,7 +14,7 @@ class LivrosController {
             })
             .catch(err => res.send({message: err.message}))
     }
-    
+
     static atualizarLivro = (req, res) => {
         const id = req.params.id
 
@@ -35,7 +35,7 @@ class LivrosController {
 
     static deletarLivro = (req, res) => {
         const id = req.params.id
-        
+
         livros.findByIdAndDelete(id)
             .then(() => {
                 res.status(200).send({message: 'Deletado com sucesso'})

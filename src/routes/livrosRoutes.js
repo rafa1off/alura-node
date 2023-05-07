@@ -5,9 +5,9 @@ const router = express.Router()
 
 router
     .get('/livros', LivrosController.listarLivros)
+    .get('/livros/:id', LivrosController.listarLivro)
     .post('/livros', LivrosController.cadastrarLivro)
     .put('/livros/:id', LivrosController.atualizarLivro)
-    .get('/livros/:id', LivrosController.listarLivro)
     .delete('/livros/:id', LivrosController.deletarLivro)
 
 export default router
