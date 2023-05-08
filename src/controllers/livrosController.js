@@ -3,6 +3,7 @@ import livros from "../models/livro.js"
 class LivrosController {
     static listarLivros = (req, res) => {
         livros.find()
+            .populate('autor', 'nome')
             .then(livros => res.json(livros))
     }
 
@@ -29,6 +30,7 @@ class LivrosController {
         const id = req.params.id
 
         livros.findById(id)
+            .populate('autor', 'nome')
             .then(livro => res.json(livro))
             .catch(err => res.send({message: err.message}))
     }
@@ -41,6 +43,14 @@ class LivrosController {
                 res.status(200).send({message: 'Deletado com sucesso'})
             })
             .catch(err => res.send({message: err.message}))
+    }
+
+    static buscarLivrosporEditora = (req, res) => {
+        const editora = req.query.editora
+
+        livros.find({ 'editora': editora })
+            .then(livros => res.send(livros))
+            .catch(err => res.send({'message': err.message}))
     }
 }
 
