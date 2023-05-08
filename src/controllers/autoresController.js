@@ -1,46 +1,46 @@
 import autores from "../models/Autor.js"
 
 class AutoresController {
-    static listarAutores = (req, res) => {
-        autores.find()
-            .then(autores => res.json(autores))
+    static listarAutores = async (req, res) => {
+        try {
+            res.json(await autores.find())
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 
-    static cadastrarAutor = (req, res) => {
-        const autor = new autores(req.body)
-        autor.save()
-            .then(() => {
-                res.status(201).send(autor.toJSON())
-            })
-            .catch(err => res.send({message: err.message}))
+    static cadastrarAutor = async (req, res) => {
+        try {
+            res.status(201).json(await new autores(req.body).save())
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 
-    static atualizarAutor = (req, res) => {
-        const id = req.params.id
-
-        autores.findByIdAndUpdate(id, { $set: req.body })
-            .then(() => {
-                res.status(200).send({message: 'Atualizado com sucesso'})
-            })
-            .catch(err => res.status(500).send({message: err.message}))
+    static atualizarAutor = async (req, res) => {
+        try {
+            await autores.findByIdAndUpdate(req.params.id, { $set: req.body })
+            res.status(200).send({'message': 'Atualizado com sucesso'})
+        } catch (err) {
+            res.status(500).send({'message': err.message})
+        }
     }
 
-    static listarAutor = (req, res) => {
-        const id = req.params.id
-
-        autores.findById(id)
-            .then(autor => res.json(autor))
-            .catch(err => res.send({message: err.message}))
+    static listarAutor = async (req, res) => {
+        try {
+            res.json(await autores.findById(req.params.id))
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 
-    static deletarAutor = (req, res) => {
-        const id = req.params.id
-
-        autores.findByIdAndDelete(id)
-            .then(() => {
-                res.status(200).send({message: 'Deletado com sucesso'})
-            })
-            .catch(err => res.send({message: err.message}))
+    static deletarAutor = async (req, res) => {
+        try {
+            await autores.findByIdAndDelete(req.params.id)
+            res.status(200).send({'message': 'Deletado com sucesso'})
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 }
 

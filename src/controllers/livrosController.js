@@ -1,56 +1,54 @@
 import livros from "../models/livro.js"
 
 class LivrosController {
-    static listarLivros = (req, res) => {
-        livros.find()
-            .populate('autor', 'nome')
-            .then(livros => res.json(livros))
+    static listarLivros = async (req, res) => {
+        try {
+            res.json(await livros.find().populate('autor', 'nome'))
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 
-    static cadastrarLivro = (req, res) => {
-        const livro = new livros(req.body)
-        livro.save()
-            .then(() => {
-                res.status(201).send(livro.toJSON())
-            })
-            .catch(err => res.send({message: err.message}))
+    static cadastrarLivro = async (req, res) => {
+        try {
+            res.status(201).json(await new livros(req.body).save())
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 
-    static atualizarLivro = (req, res) => {
-        const id = req.params.id
-
-        livros.findByIdAndUpdate(id, { $set: req.body })
-            .then(() => {
-                res.status(200).send({message: 'Atualizado com sucesso'})
-            })
-            .catch(err => res.status(500).send({message: err.message}))
+    static atualizarLivro = async (req, res) => {
+        try {
+            await livros.findByIdAndUpdate(req.params.id, { $set: req.body })
+            res.status(200).send({'message': 'Atualizado com sucesso'})
+        } catch (err) {
+            res.status(500).send({'message': err.message})
+        }
     }
 
-    static listarLivro = (req, res) => {
-        const id = req.params.id
-
-        livros.findById(id)
-            .populate('autor', 'nome')
-            .then(livro => res.json(livro))
-            .catch(err => res.send({message: err.message}))
+    static listarLivro = async (req, res) => {
+        try {
+            res.json(await livros.findById(req.params.id).populate('autor', 'nome'))
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 
-    static deletarLivro = (req, res) => {
-        const id = req.params.id
-
-        livros.findByIdAndDelete(id)
-            .then(() => {
-                res.status(200).send({message: 'Deletado com sucesso'})
-            })
-            .catch(err => res.send({message: err.message}))
+    static deletarLivro = async (req, res) => {
+        try {
+            await livros.findByIdAndDelete(req.params.id)
+            res.status(200).send({message: 'Deletado com sucesso'})
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 
-    static buscarLivrosporEditora = (req, res) => {
-        const editora = req.query.editora
-
-        livros.find({ 'editora': editora })
-            .then(livros => res.send(livros))
-            .catch(err => res.send({'message': err.message}))
+    static buscarLivrosporEditora = async (req, res) => {
+        try {
+            res.send(await livros.find({ 'editora': req.query.editora }))
+        } catch (err) {
+            res.send({'message': err.message})
+        }
     }
 }
 
