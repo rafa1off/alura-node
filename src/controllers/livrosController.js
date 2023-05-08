@@ -5,7 +5,7 @@ class LivrosController {
         try {
             res.json(await livros.find().populate('autor', 'nome'))
         } catch (err) {
-            res.send({'message': err.message})
+            res.status(500).send({'message': err.message})
         }
     }
 
@@ -13,14 +13,14 @@ class LivrosController {
         try {
             res.status(201).json(await new livros(req.body).save())
         } catch (err) {
-            res.send({'message': err.message})
+            res.status(500).send({'message': err.message})
         }
     }
 
     static atualizarLivro = async (req, res) => {
         try {
             await livros.findByIdAndUpdate(req.params.id, { $set: req.body })
-            res.status(200).send({'message': 'Atualizado com sucesso'})
+            res.send({'message': 'Atualizado com sucesso'})
         } catch (err) {
             res.status(500).send({'message': err.message})
         }
@@ -30,16 +30,16 @@ class LivrosController {
         try {
             res.json(await livros.findById(req.params.id).populate('autor', 'nome'))
         } catch (err) {
-            res.send({'message': err.message})
+            res.status(500).send({'message': err.message})
         }
     }
 
     static deletarLivro = async (req, res) => {
         try {
             await livros.findByIdAndDelete(req.params.id)
-            res.status(200).send({message: 'Deletado com sucesso'})
+            res.send({message: 'Deletado com sucesso'})
         } catch (err) {
-            res.send({'message': err.message})
+            res.status(500).send({'message': err.message})
         }
     }
 
@@ -47,7 +47,7 @@ class LivrosController {
         try {
             res.send(await livros.find({ 'editora': req.query.editora }))
         } catch (err) {
-            res.send({'message': err.message})
+            res.status(500).send({'message': err.message})
         }
     }
 }
