@@ -6,7 +6,7 @@ class AutoresController {
         try {
             res.json(await autores.find())
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 
@@ -14,7 +14,7 @@ class AutoresController {
         try {
             res.status(201).json(await new autores(req.body).save())
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 
@@ -23,7 +23,7 @@ class AutoresController {
             await autores.findByIdAndUpdate(req.params.id, { $set: req.body })
             res.send({'message': 'Atualizado com sucesso'})
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 
@@ -49,7 +49,7 @@ class AutoresController {
             await autores.findByIdAndDelete(req.params.id)
             res.send({'message': 'Deletado com sucesso'})
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 }

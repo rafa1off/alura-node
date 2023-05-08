@@ -5,7 +5,7 @@ class LivrosController {
         try {
             res.json(await livros.find().populate('autor', 'nome'))
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 
@@ -13,7 +13,7 @@ class LivrosController {
         try {
             res.status(201).json(await new livros(req.body).save())
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 
@@ -22,7 +22,7 @@ class LivrosController {
             await livros.findByIdAndUpdate(req.params.id, { $set: req.body })
             res.send({'message': 'Atualizado com sucesso'})
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 
@@ -30,7 +30,7 @@ class LivrosController {
         try {
             res.json(await livros.findById(req.params.id).populate('autor', 'nome'))
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 
@@ -39,7 +39,7 @@ class LivrosController {
             await livros.findByIdAndDelete(req.params.id)
             res.send({message: 'Deletado com sucesso'})
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 
@@ -47,7 +47,7 @@ class LivrosController {
         try {
             res.send(await livros.find({ 'editora': req.query.editora }))
         } catch (err) {
-            res.status(500).send({'message': err.message})
+            res.status(500).send({'message': 'Erro interno no servidor'})
         }
     }
 }
