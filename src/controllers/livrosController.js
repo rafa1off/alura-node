@@ -1,55 +1,58 @@
 import livros from "../models/livro.js"
 
-class LivrosController {
-    static listarLivros = async (req, res) => {
+export default class LivrosController {
+    static listarLivros = async (req, res, next) => {
         try {
             res.json(await livros.find().populate('autor', 'nome'))
         } catch (err) {
-            res.status(500).send({'message': 'Erro interno no servidor'})
+            next(err)
         }
     }
 
-    static cadastrarLivro = async (req, res) => {
+    static cadastrarLivro = async (req, res, next) => {
         try {
             res.status(201).json(await new livros(req.body).save())
         } catch (err) {
-            res.status(500).send({'message': 'Erro interno no servidor'})
+            next(err)
         }
     }
 
-    static atualizarLivro = async (req, res) => {
+    static atualizarLivro = async (req, res, next) => {
         try {
             await livros.findByIdAndUpdate(req.params.id, { $set: req.body })
             res.send({'message': 'Atualizado com sucesso'})
         } catch (err) {
-            res.status(500).send({'message': 'Erro interno no servidor'})
+            next(err)
         }
     }
 
-    static listarLivro = async (req, res) => {
+    static listarLivro = async (req, res, next) => {
         try {
-            res.json(await livros.findById(req.params.id).populate('autor', 'nome'))
+            const livro = await livros.findById(req.params.id)
+            if (livro != null) {
+                res.json(livro)
+            } else {
+                res.status(404).send({ 'message': 'Identificador não encontrado' })
+            }
         } catch (err) {
-            res.status(500).send({'message': 'Erro interno no servidor'})
+            next(err)
         }
     }
 
-    static deletarLivro = async (req, res) => {
+    static deletarLivro = async (req, res, next) => {
         try {
             await livros.findByIdAndDelete(req.params.id)
             res.send({message: 'Deletado com sucesso'})
         } catch (err) {
-            res.status(500).send({'message': 'Erro interno no servidor'})
+            next(err)
         }
     }
 
-    static buscarLivrosporEditora = async (req, res) => {
+    static buscarLivrosporEditora = async (req, res, next) => {
         try {
-            res.send(await livros.find({ 'editora': req.query.editora }))
+            res.json(await livros.find({ 'editora': req.query.editora }))
         } catch (err) {
-            res.status(500).send({'message': 'Erro interno no servidor'})
+            next(err)
         }
     }
 }
-
-export default LivrosController
