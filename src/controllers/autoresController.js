@@ -19,9 +19,14 @@ export default class AutoresController {
 
     static atualizarAutor = async (req, res, next) => {
         try {
-            await autores.findByIdAndUpdate(req.params.id, { $set: req.body })
-            res.send({'message': 'Atualizado com sucesso'})
-        } catch (err) {
+            const id = await autores.findById(req.params.id)
+            if (id != null) {
+                await autores.findByIdAndUpdate(id, { $set: req.body })
+                res.json({ 'message': 'Atualizado com sucesso' })
+            } else {
+                res.status(404).send({ 'message': 'Identificador não encontrado' })
+            }
+        } catch(err) {
             next(err)
         }
     }
@@ -41,8 +46,13 @@ export default class AutoresController {
 
     static deletarAutor = async (req, res, next) => {
         try {
-            await autores.findByIdAndDelete(req.params.id)
-            res.send({'message': 'Deletado com sucesso'})
+            const id = await autores.findById(req.params.id)
+            if (id != null) {
+                await autores.findByIdAndDelete(id)
+                res.send({ 'message': 'Removido com sucesso' })
+            } else {
+                res.status(404).send({ 'message': 'Identificador não encontrado' })
+            }
         } catch (err) {
             next(err)
         }

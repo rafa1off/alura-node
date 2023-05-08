@@ -19,8 +19,13 @@ export default class LivrosController {
 
     static atualizarLivro = async (req, res, next) => {
         try {
-            await livros.findByIdAndUpdate(req.params.id, { $set: req.body })
-            res.send({'message': 'Atualizado com sucesso'})
+            const id = await livros.findById(req.params.id)
+            if (id != null) {
+                await livros.findByIdAndUpdate(id, { $set: req.body })
+                res.send({ 'message': 'Atualizado com sucesso' })
+            } else {
+                res.status(404).send({ 'message': 'Identificador não encontrado' })
+            }
         } catch (err) {
             next(err)
         }
@@ -41,8 +46,13 @@ export default class LivrosController {
 
     static deletarLivro = async (req, res, next) => {
         try {
-            await livros.findByIdAndDelete(req.params.id)
-            res.send({message: 'Deletado com sucesso'})
+            const id = await livros.findById(req.params.id)
+            if (id != null) {
+                await livros.findByIdAndDelete(id)
+                res.send({ 'message': 'Removido com sucesso' })
+            } else {
+                res.status(404).send({ 'message': 'Identificador não encontrado' })
+            }
         } catch (err) {
             next(err)
         }
