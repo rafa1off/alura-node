@@ -1,5 +1,5 @@
 import Erro404 from "../erros/Erro404.js"
-import livros from "../models/livro.js"
+import {livros} from "../models/index.js"
 
 export default class LivrosController {
     static listarLivros = async (req, res, next) => {
@@ -20,10 +20,9 @@ export default class LivrosController {
 
     static atualizarLivro = async (req, res, next) => {
         try {
-            const id = await livros.findById(req.params.id)
-            if (id != null) {
-                await livros.findByIdAndUpdate(id, { $set: req.body })
-                res.send({ 'message': 'Atualizado com sucesso' })
+            const livro = await livros.findByIdAndUpdate(req.params.id, { $set: req.body })
+            if (livro != null) {
+                res.json({ 'message': 'Atualizado com sucesso' })
             } else {
                 next(new Erro404('id'))
             }
@@ -47,9 +46,8 @@ export default class LivrosController {
 
     static deletarLivro = async (req, res, next) => {
         try {
-            const id = await livros.findById(req.params.id)
-            if (id != null) {
-                await livros.findByIdAndDelete(id)
+            const livro = await livros.findByIdAndDelete(req.params.id)
+            if (livro != null) {
                 res.send({ 'message': 'Removido com sucesso' })
             } else {
                 next(new Erro404('id'))

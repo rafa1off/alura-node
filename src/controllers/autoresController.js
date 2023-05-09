@@ -1,5 +1,5 @@
 import Erro404 from "../erros/Erro404.js"
-import autores from "../models/Autor.js"
+import {autores} from "../models/index.js"
 
 export default class AutoresController {
     static listarAutores = async (req, res, next) => {
@@ -20,9 +20,8 @@ export default class AutoresController {
 
     static atualizarAutor = async (req, res, next) => {
         try {
-            const id = await autores.findById(req.params.id)
-            if (id != null) {
-                await autores.findByIdAndUpdate(id, { $set: req.body })
+            const autor = await autores.findByIdAndUpdate(req.params.id, { $set: req.body })
+            if (autor != null) {
                 res.json({ 'message': 'Atualizado com sucesso' })
             } else {
                 next(new Erro404('id'))
@@ -47,9 +46,8 @@ export default class AutoresController {
 
     static deletarAutor = async (req, res, next) => {
         try {
-            const id = await autores.findById(req.params.id)
-            if (id != null) {
-                await autores.findByIdAndDelete(id)
+            const autor = await autores.findByIdAndDelete(req.params.id)
+            if (autor != null) {
                 res.send({ 'message': 'Removido com sucesso' })
             } else {
                 next(new Erro404('id'))
