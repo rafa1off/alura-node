@@ -1,3 +1,4 @@
+import Erro404 from "../erros/Erro404.js"
 import livros from "../models/livro.js"
 
 export default class LivrosController {
@@ -24,7 +25,7 @@ export default class LivrosController {
                 await livros.findByIdAndUpdate(id, { $set: req.body })
                 res.send({ 'message': 'Atualizado com sucesso' })
             } else {
-                res.status(404).send({ 'message': 'Identificador não encontrado' })
+                next(new Erro404('id'))
             }
         } catch (err) {
             next(err)
@@ -37,7 +38,7 @@ export default class LivrosController {
             if (livro != null) {
                 res.json(livro)
             } else {
-                res.status(404).send({ 'message': 'Identificador não encontrado' })
+                next(new Erro404('id'))
             }
         } catch (err) {
             next(err)
@@ -51,7 +52,7 @@ export default class LivrosController {
                 await livros.findByIdAndDelete(id)
                 res.send({ 'message': 'Removido com sucesso' })
             } else {
-                res.status(404).send({ 'message': 'Identificador não encontrado' })
+                next(new Erro404('id'))
             }
         } catch (err) {
             next(err)

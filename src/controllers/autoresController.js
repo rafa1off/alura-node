@@ -1,3 +1,4 @@
+import Erro404 from "../erros/Erro404.js"
 import autores from "../models/Autor.js"
 
 export default class AutoresController {
@@ -24,7 +25,7 @@ export default class AutoresController {
                 await autores.findByIdAndUpdate(id, { $set: req.body })
                 res.json({ 'message': 'Atualizado com sucesso' })
             } else {
-                res.status(404).send({ 'message': 'Identificador não encontrado' })
+                next(new Erro404('id'))
             }
         } catch(err) {
             next(err)
@@ -37,7 +38,7 @@ export default class AutoresController {
             if (autor != null) {
                 res.json(autor)
             } else {
-                res.status(404).send({ 'message': 'Identificador não encontrado' })
+                next(new Erro404('id'))
             }
         } catch (err) {
             next(err)
@@ -51,7 +52,7 @@ export default class AutoresController {
                 await autores.findByIdAndDelete(id)
                 res.send({ 'message': 'Removido com sucesso' })
             } else {
-                res.status(404).send({ 'message': 'Identificador não encontrado' })
+                next(new Erro404('id'))
             }
         } catch (err) {
             next(err)
