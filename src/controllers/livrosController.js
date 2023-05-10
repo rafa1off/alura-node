@@ -1,5 +1,5 @@
 import Erro404 from "../erros/Erro404.js"
-import {livros} from "../models/index.js"
+import {autores, livros} from "../models/index.js"
 
 export default class LivrosController {
     static listarLivros = async (req, res, next) => {
@@ -57,11 +57,36 @@ export default class LivrosController {
         }
     }
 
-    static buscarLivrosporEditora = async (req, res, next) => {
+    static buscarLivrosporFiltro = async (req, res, next) => {
         try {
-            res.json(await livros.find({ 'editora': req.query.editora }))
+            const busca = await processaBusca(req.query)
+            if (busca != null) {
+                res.json(await livros.find(busca).populate('autor', 'nome'))
+            } else {
+                res.status(200).json({'message': 'Nada encontrado'})
+            }
         } catch (err) {
             next(err)
         }
     }
+}
+
+async function processaBusca(parametro) {
+    const { editora, titulo, minPaginas, maxPaginas, nomeAutor } = parametro
+    let busca = {}
+    if (editora) busca.editora = {$regex: editora, $options: 'i'}
+    if (titulo) busca.titulo = {$regex: titulo, $options: 'i'}
+    if (minPaginas || maxPaginas) busca.numeroPaginas = {}
+    if (minPaginas) busca.numeroPaginas.$gte = minPaginas
+    if (maxPaginas) busca.numeroPaginas.$lte = maxPaginas
+    if (nomeAutor) {
+        const autor = await autores.findOne({ nome: { $regex: nomeAutor, $options: 'i' } })
+        if (autor != null) {
+            busca.autor = autor._id
+        } else {
+            busca = null
+        }
+    }
+
+    return busca
 }
