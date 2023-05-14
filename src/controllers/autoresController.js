@@ -1,47 +1,60 @@
-import autores from "../models/Autor.js"
+import Erro404 from "../erros/Erro404.js"
+import {autores} from "../models/index.js"
 
-class AutoresController {
-    static listarAutores = (req, res) => {
-        autores.find()
-            .then(autores => res.json(autores))
+export default class AutoresController {
+    static listarAutores = async (req, res, next) => {
+        try {
+            req.resultado = autores.find()
+            next()
+        } catch (err) {
+            next(err)
+        }
     }
 
-    static cadastrarAutor = (req, res) => {
-        const autor = new autores(req.body)
-        autor.save()
-            .then(() => {
-                res.status(201).send(autor.toJSON())
-            })
-            .catch(err => res.send({message: err.message}))
+    static cadastrarAutor = async (req, res, next) => {
+        try {
+            res.status(201).json(await new autores(req.body).save())
+        } catch (err) {
+            next(err)
+        }
     }
 
-    static atualizarAutor = (req, res) => {
-        const id = req.params.id
-
-        autores.findByIdAndUpdate(id, { $set: req.body })
-            .then(() => {
-                res.status(200).send({message: 'Atualizado com sucesso'})
-            })
-            .catch(err => res.status(500).send({message: err.message}))
+    static atualizarAutor = async (req, res, next) => {
+        try {
+            const autor = await autores.findByIdAndUpdate(req.params.id, { $set: req.body })
+            if (autor != null) {
+                res.json({ 'message': 'Atualizado com sucesso' })
+            } else {
+                next(new Erro404('id'))
+            }
+        } catch(err) {
+            next(err)
+        }
     }
 
-    static listarAutor = (req, res) => {
-        const id = req.params.id
-
-        autores.findById(id)
-            .then(autor => res.json(autor))
-            .catch(err => res.send({message: err.message}))
+    static listarAutor = async (req, res, next) => {
+        try {
+            const autor = await autores.findById(req.params.id)
+            if (autor != null) {
+                res.json(autor)
+            } else {
+                next(new Erro404('id'))
+            }
+        } catch (err) {
+            next(err)
+        }
     }
 
-    static deletarAutor = (req, res) => {
-        const id = req.params.id
-
-        autores.findByIdAndDelete(id)
-            .then(() => {
-                res.status(200).send({message: 'Deletado com sucesso'})
-            })
-            .catch(err => res.send({message: err.message}))
+    static deletarAutor = async (req, res, next) => {
+        try {
+            const autor = await autores.findByIdAndDelete(req.params.id)
+            if (autor != null) {
+                res.send({ 'message': 'Removido com sucesso' })
+            } else {
+                next(new Erro404('id'))
+            }
+        } catch (err) {
+            next(err)
+        }
     }
 }
-
-export default AutoresController

@@ -1,57 +1,94 @@
-import livros from "../models/livro.js"
+import Erro404 from "../erros/Erro404.js"
+import {autores, livros} from "../models/index.js"
 
-class LivrosController {
-    static listarLivros = (req, res) => {
-        livros.find()
-            .populate('autor', 'nome')
-            .then(livros => res.json(livros))
+export default class LivrosController {
+    static listarLivros = async (req, res, next) => {
+        try {
+            req.resultado = livros.find()
+            next()
+        } catch (err) {
+            next(err)
+        }
     }
 
-    static cadastrarLivro = (req, res) => {
-        const livro = new livros(req.body)
-        livro.save()
-            .then(() => {
-                res.status(201).send(livro.toJSON())
-            })
-            .catch(err => res.send({message: err.message}))
+    static cadastrarLivro = async (req, res, next) => {
+        try {
+            res.status(201).json(await new livros(req.body).save())
+        } catch (err) {
+            next(err)
+        }
     }
 
-    static atualizarLivro = (req, res) => {
-        const id = req.params.id
-
-        livros.findByIdAndUpdate(id, { $set: req.body })
-            .then(() => {
-                res.status(200).send({message: 'Atualizado com sucesso'})
-            })
-            .catch(err => res.status(500).send({message: err.message}))
+    static atualizarLivro = async (req, res, next) => {
+        try {
+            const livro = await livros.findByIdAndUpdate(req.params.id, { $set: req.body })
+            if (livro != null) {
+                res.json({ 'message': 'Atualizado com sucesso' })
+            } else {
+                next(new Erro404('id'))
+            }
+        } catch (err) {
+            next(err)
+        }
     }
 
-    static listarLivro = (req, res) => {
-        const id = req.params.id
-
-        livros.findById(id)
-            .populate('autor', 'nome')
-            .then(livro => res.json(livro))
-            .catch(err => res.send({message: err.message}))
+    static listarLivro = async (req, res, next) => {
+        try {
+            const livro = await livros.findById(req.params.id)
+            if (livro != null) {
+                res.json(livro)
+            } else {
+                next(new Erro404('id'))
+            }
+        } catch (err) {
+            next(err)
+        }
     }
 
-    static deletarLivro = (req, res) => {
-        const id = req.params.id
-
-        livros.findByIdAndDelete(id)
-            .then(() => {
-                res.status(200).send({message: 'Deletado com sucesso'})
-            })
-            .catch(err => res.send({message: err.message}))
+    static deletarLivro = async (req, res, next) => {
+        try {
+            const livro = await livros.findByIdAndDelete(req.params.id)
+            if (livro != null) {
+                res.send({ 'message': 'Removido com sucesso' })
+            } else {
+                next(new Erro404('id'))
+            }
+        } catch (err) {
+            next(err)
+        }
     }
 
-    static buscarLivrosporEditora = (req, res) => {
-        const editora = req.query.editora
-
-        livros.find({ 'editora': editora })
-            .then(livros => res.send(livros))
-            .catch(err => res.send({'message': err.message}))
+    static buscarLivrosporFiltro = async (req, res, next) => {
+        try {
+            const busca = await processaBusca(req.query)
+            if (busca != null) {
+                req.resultado = livros.find(busca)
+                next()
+            } else {
+                res.status(200).json({'message': 'Nada encontrado'})
+            }
+        } catch (err) {
+            next(err)
+        }
     }
 }
 
-export default LivrosController
+async function processaBusca(parametro) {
+    const { editora, titulo, minPaginas, maxPaginas, nomeAutor } = parametro
+    let busca = {}
+    if (editora) busca.editora = {$regex: editora, $options: 'i'}
+    if (titulo) busca.titulo = {$regex: titulo, $options: 'i'}
+    if (minPaginas || maxPaginas) busca.numeroPaginas = {}
+    if (minPaginas) busca.numeroPaginas.$gte = minPaginas
+    if (maxPaginas) busca.numeroPaginas.$lte = maxPaginas
+    if (nomeAutor) {
+        const autor = await autores.findOne({ nome: { $regex: nomeAutor, $options: 'i' } })
+        if (autor != null) {
+            busca.autor = autor._id
+        } else {
+            busca = null
+        }
+    }
+
+    return busca
+}
