@@ -9,7 +9,7 @@ export default function manipuladorDeErros(err, req, res, next) {
         new RequisicaoIncorreta().enviarErro(res)
     } else if (err instanceof mongoose.Error.ValidationError) {
         new ErroValidacao(err).enviarErro(res)
-    } else if (err instanceof Erro404) {
+    } else if (err instanceof ErroBase) {
         err.enviarErro(res)
     } else {
         new ErroBase().enviarErro(res)

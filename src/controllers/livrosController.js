@@ -4,7 +4,8 @@ import {autores, livros} from "../models/index.js"
 export default class LivrosController {
     static listarLivros = async (req, res, next) => {
         try {
-            res.json(await livros.find().populate('autor', 'nome'))
+            req.resultado = livros.find()
+            next()
         } catch (err) {
             next(err)
         }
@@ -61,7 +62,8 @@ export default class LivrosController {
         try {
             const busca = await processaBusca(req.query)
             if (busca != null) {
-                res.json(await livros.find(busca).populate('autor', 'nome'))
+                req.resultado = livros.find(busca)
+                next()
             } else {
                 res.status(200).json({'message': 'Nada encontrado'})
             }
